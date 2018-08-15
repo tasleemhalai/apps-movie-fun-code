@@ -34,7 +34,6 @@ public class ServiceCredentials {
                 return service.get("credentials").get(credentialKey).asText();
             }
         }
-
         throw new IllegalStateException("No " + serviceName + " found in VCAP_SERVICES");
     }
 }
