@@ -2,6 +2,8 @@ package org.superbiz.moviefun.blobstore;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -33,6 +35,6 @@ public class ServiceCredentials {
             }
         }
 
-        throw new IllegalStateException("No "+ serviceName + " found in VCAP_SERVICES");
+        throw new IllegalStateException("No " + serviceName + " found in VCAP_SERVICES");
     }
 }
