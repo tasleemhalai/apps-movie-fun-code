@@ -1,9 +1,5 @@
 package org.superbiz.moviefun.albums;
-
-
 import org.apache.tika.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,7 +22,6 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 @RequestMapping("/albums")
 public class AlbumsController {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final AlbumsBean albumsBean;
     private final BlobStore blobStore;
 
@@ -49,16 +44,15 @@ public class AlbumsController {
     }
 
     @PostMapping("/{albumId}/cover")
-    public String uploadCover(@PathVariable Long albumId, @RequestParam("file") MultipartFile uploadedFile) {
-        logger.debug("Uploading cover for album with id {}", albumId);
-
+    public String uploadCover(@PathVariable long albumId, @RequestParam("file") MultipartFile uploadedFile) throws IOException {
         if (uploadedFile.getSize() > 0) {
-            try {
-                tryToUploadCover(albumId, uploadedFile);
+            Blob coverBlob = new Blob(
+                    getCoverBlobName(albumId),
+                    uploadedFile.getInputStream(),
+                    uploadedFile.getContentType()
+            );
 
-            } catch (IOException e) {
-                logger.warn("Error while uploading album cover", e);
-            }
+            blobStore.put(coverBlob);
         }
 
         return format("redirect:/albums/%d", albumId);
@@ -82,16 +76,6 @@ public class AlbumsController {
     public String deleteCovers() {
         blobStore.deleteAll();
         return "redirect:/albums";
-    }
-
-    private void tryToUploadCover(@PathVariable Long albumId, @RequestParam("file") MultipartFile uploadedFile) throws IOException {
-        Blob coverBlob = new Blob(
-                getCoverBlobName(albumId),
-                uploadedFile.getInputStream(),
-                uploadedFile.getContentType()
-        );
-
-        blobStore.put(coverBlob);
     }
 
     private Blob buildDefaultCoverBlob() {
